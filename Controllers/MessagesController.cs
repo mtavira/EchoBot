@@ -8,6 +8,7 @@ using System.Net.Http;
 
 namespace Microsoft.Bot.Sample.SimpleEchoBot
 {
+
     [BotAuthentication]
     public class MessagesController : ApiController
     {
@@ -22,7 +23,20 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
             // check if activity is of type message
             if (activity != null && activity.GetActivityType() == ActivityTypes.Message)
             {
-                await Conversation.SendAsync(activity, () => new EchoDialog());
+                string msgString = activity.Text.ToLower();
+
+                if (msgString.ToLower().Contains("love"))
+                {
+                    ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
+                    Activity reply = activity.CreateReply($"Sorry, I did not understand your request?\n\rJust type \"Help\" if you need help.");
+                    string replystring = "You are connected to server XXX";
+                    //var s = k2api.GetServerInfo();
+                    reply = activity.CreateReply(replystring);
+
+                    await connector.Conversations.ReplyToActivityAsync(reply);
+                }
+                else
+                    await Conversation.SendAsync(activity, () => new EchoDialog());
             }
             else
             {
