@@ -6,7 +6,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using System.Web.Http.Description;
 using System.Net.Http;
 
-namespace Microsoft.Bot.Sample.SimpleEchoBot
+namespace K2DemoBot
 {
 
     [BotAuthentication]
@@ -23,20 +23,36 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
             // check if activity is of type message
             if (activity != null && activity.GetActivityType() == ActivityTypes.Message)
             {
+                ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
+                Activity reply;
                 string msgString = activity.Text.ToLower();
 
-                if (msgString.ToLower().Contains("love"))
+                if (msgString.ToLower().Contains("hi"))
                 {
-                    ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
-                    Activity reply = activity.CreateReply($"Sorry, I did not understand your request?\n\rJust type \"Help\" if you need help.");
-                    string replystring = "You are connected to server XXX";
-                    //var s = k2api.GetServerInfo();
+                    string replystring = "Welcome to the Price Enquiry system! Ask the 'price' of any of our products: K2 Cloud, K2 Five or K2 Connect.";
                     reply = activity.CreateReply(replystring);
+                }
+
+                if (msgString.ToLower().Contains("price"))
+                {
+                    string K2Product = "K2 Cloud";
+                    if (msgString.ToLower().Trim().Contains("cloud"))
+                        K2Product = "K2 Cloud";
+                    if (msgString.ToLower().Trim().Contains("five"))
+                        K2Product = "K2 Five";
+                    if (msgString.ToLower().Trim().Contains("connect"))
+                        K2Product = "K2 Connect";
+
+                    using (K2WebAPI myAPI = new K2WebAPI())
+                    {
+                        double price = myAPI.GetProductListPrize(K2WebAPI.SanitizeK2Products(K2Product));
+                        reply = activity.CreateReply($"The list price of {K2Product} is {price.ToString()}.");
+                    }
 
                     await connector.Conversations.ReplyToActivityAsync(reply);
                 }
                 else
-                    await Conversation.SendAsync(activity, () => new EchoDialog());
+                    await Conversation.SendAsync(activity, () => new EchoDialog(activity));
             }
             else
             {

@@ -6,12 +6,18 @@ using Microsoft.Bot.Builder.Dialogs;
 using System.Net.Http;
 
 
-namespace Microsoft.Bot.Sample.SimpleEchoBot
+namespace K2DemoBot
 {
     [Serializable]
     public class EchoDialog : IDialog<object>
     {
+        private Activity _activity;
         protected int count = 1;
+
+        public EchoDialog(Activity activity)
+        {
+            _activity = activity;
+        }
 
         public async Task StartAsync(IDialogContext context)
         {
@@ -30,6 +36,17 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
                     "Are you sure you want to reset the count?",
                     "Didn't get that!",
                     promptStyle: PromptStyle.Auto);
+            }
+            if (message.Text == "activity")
+            {
+                var msg = "";
+                if (_activity != null)
+                {
+                    msg = string.Format("activity details {0}", _activity.Summary);
+
+                }
+                await context.PostAsync(msg);
+                context.Wait(MessageReceivedAsync);
             }
             else
             {
@@ -52,6 +69,6 @@ namespace Microsoft.Bot.Sample.SimpleEchoBot
             }
             context.Wait(MessageReceivedAsync);
         }
-
+        
     }
 }
