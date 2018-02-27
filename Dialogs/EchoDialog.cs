@@ -11,12 +11,12 @@ namespace K2DemoBot
     [Serializable]
     public class EchoDialog : IDialog<object>
     {
-        //private Activity _activity;
+        private Activity _activity;
         protected int count = 1;
 
-        public EchoDialog()//(Activity activity)
+        public EchoDialog(Activity activity)
         {
-            //_activity = activity;
+            _activity = activity;
         }
 
         public async Task StartAsync(IDialogContext context)
@@ -37,17 +37,17 @@ namespace K2DemoBot
                     "Didn't get that!",
                     promptStyle: PromptStyle.Auto);
             }
-            //if (message.Text == "activity")
-            //{
-            //    var msg = "";
-            //    if (_activity != null)
-            //    {
-            //        msg = string.Format("activity details {0}", _activity.Summary);
+            if (message.Text == "activity")
+            {
+                var msg = "";
+                if (_activity != null)
+                {
+                    msg = string.Format("activity details {0}", _activity.Summary);
 
-            //    }
-            //    await context.PostAsync(msg);
-            //    context.Wait(MessageReceivedAsync);
-            //}
+                }
+                await context.PostAsync(msg);
+                context.Wait(MessageReceivedAsync);
+            }
             else
             {
                 await context.PostAsync($"{this.count++}: You said {message.Text}");
