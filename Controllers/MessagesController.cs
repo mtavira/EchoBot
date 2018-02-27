@@ -21,16 +21,18 @@ namespace K2DemoBot
         public virtual async Task<HttpResponseMessage> Post([FromBody] Activity activity)
         {
             // check if activity is of type message
-            if (activity != null && activity.GetActivityType() == ActivityTypes.Message)
+            if (activity != null && activity.Type == ActivityTypes.Message)
             {
-                string msgString = activity.Text.ToLower();
+                string msgString = activity.Text;
 
                 if (msgString.ToLower().Contains("hi"))
                 {
-                    ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
-                    string replystring = "Welcome to the Price Enquiry system! Ask the 'price' of any of our products: K2 Cloud, K2 Five or K2 Connect.";
-                    Activity reply = activity.CreateReply(replystring);
-                    await connector.Conversations.ReplyToActivityAsync(reply);
+                    await Conversation.SendAsync(activity, () => new EchoDialog(activity));
+
+                    //ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
+                    //string replystring = "Welcome to the Price Enquiry system! Ask the 'price' of any of our products: K2 Cloud, K2 Five or K2 Connect.";
+                    //Activity reply = activity.CreateReply(replystring);
+                    //await connector.Conversations.ReplyToActivityAsync(reply);
                 }
 
                 if (msgString.ToLower().Contains("price"))

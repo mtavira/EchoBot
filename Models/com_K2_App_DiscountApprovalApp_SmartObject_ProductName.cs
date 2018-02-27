@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace K2DemoBot.Models
+namespace K2DemoBot
 {
     /// <summary>
     /// {
