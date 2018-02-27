@@ -23,18 +23,21 @@ namespace K2DemoBot
             // check if activity is of type message
             if (activity != null && activity.GetActivityType() == ActivityTypes.Message)
             {
-                ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
-                Activity reply;
                 string msgString = activity.Text.ToLower();
 
                 if (msgString.ToLower().Contains("hi"))
                 {
+                    ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
                     string replystring = "Welcome to the Price Enquiry system! Ask the 'price' of any of our products: K2 Cloud, K2 Five or K2 Connect.";
-                    reply = activity.CreateReply(replystring);
+                    Activity reply = activity.CreateReply(replystring);
+                    await connector.Conversations.ReplyToActivityAsync(reply);
                 }
 
                 if (msgString.ToLower().Contains("price"))
                 {
+                    ConnectorClient connector = new ConnectorClient(new System.Uri(activity.ServiceUrl));
+                    Activity reply = activity.CreateReply($"The list price");
+
                     string K2Product = "K2 Cloud";
                     if (msgString.ToLower().Trim().Contains("cloud"))
                         K2Product = "K2 Cloud";
@@ -45,14 +48,15 @@ namespace K2DemoBot
 
                     using (K2WebAPI myAPI = new K2WebAPI())
                     {
-                        double price = myAPI.GetProductListPrize(K2WebAPI.SanitizeK2Products(K2Product));
+                        double price = 50000;
+                        myAPI.GetProductListPrize(K2WebAPI.SanitizeK2Products(K2Product));
                         reply = activity.CreateReply($"The list price of {K2Product} is {price.ToString()}.");
                     }
 
                     await connector.Conversations.ReplyToActivityAsync(reply);
                 }
                 else
-                    await Conversation.SendAsync(activity, () => new EchoDialog(activity));
+                    await Conversation.SendAsync(activity, () => new EchoDialog());
             }
             else
             {
