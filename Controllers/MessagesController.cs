@@ -56,7 +56,7 @@ namespace K2DemoBot
                     await connector.Conversations.ReplyToActivityAsync(reply);
                 }
                 else
-                    await Conversation.SendAsync(activity, () => new EchoDialog());
+                    await Conversation.SendAsync(activity, () => new EchoDialog(activity));
             }
             else
             {
